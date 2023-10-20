@@ -6,7 +6,19 @@
     {
       "label": "Update strapi versions",
       "type": "shell",
-      "command": "node .vscode/update.js",
+      "command": "node .bin/update.js",
+      "problemMatcher": [],
+      "presentation": {
+        "focus": true,
+        "close": false,
+        "showReuseMessage": false,
+        "echo": false
+      }
+    },
+    {
+      "label": "Push all branches",
+      "type": "shell",
+      "command": "bash .bin/push-all-branches.bash",
       "problemMatcher": [],
       "presentation": {
         "focus": true,
