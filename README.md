@@ -1,4 +1,6 @@
-# strapi-all-versions
+# Strapi all versions
+
+Repository containing every Strapi version with one version per branch since Strapi 4.4.0. Built to ease the testing of specific versions of the CMS in the cloud. Also contains a script to install new versions in new branches automatically.
 
 ## Requirements
 - Nodejs 20
@@ -6,7 +8,7 @@
 - Npm
 - Git
 
-## Add missing strapi versions
+## Add missing Strapi versions
 
 ```bash
 node .bin/update.js
