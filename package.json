@@ -1,0 +1,30 @@
+{
+  "name": "4-7-0-exp-3-d-6-a-31-eb-083-e-9-d-44-afcf-98-f-68-c-107-fb-7567-e-5720",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Strapi application",
+  "scripts": {
+    "develop": "strapi develop",
+    "start": "strapi start",
+    "build": "strapi build",
+    "strapi": "strapi"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@strapi/strapi": "4.7.0-exp.3d6a31eb083e9d44afcf98f68c107fb7567e5720",
+    "@strapi/plugin-users-permissions": "4.7.0-exp.3d6a31eb083e9d44afcf98f68c107fb7567e5720",
+    "@strapi/plugin-i18n": "4.7.0-exp.3d6a31eb083e9d44afcf98f68c107fb7567e5720",
+    "better-sqlite3": "8.0.1"
+  },
+  "author": {
+    "name": "A Strapi developer"
+  },
+  "strapi": {
+    "uuid": "bde9a4ea-0e45-4853-8e55-6670c39b8255"
+  },
+  "engines": {
+    "node": ">=14.19.1 <=18.x.x",
+    "npm": ">=6.0.0"
+  },
+  "license": "MIT"
+}
