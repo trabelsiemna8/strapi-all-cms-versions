@@ -154,7 +154,7 @@ const moveVersionsToBranches = (versions) => {
 const main = async () => {
   const versions = listStrapiVersions({ minVersion: MIN_VERSION });
 
-  await installStrapiVersions(versions);
+  // await installStrapiVersions(versions);
   moveVersionsToBranches(versions);
 
   console.log("\nDone.");
