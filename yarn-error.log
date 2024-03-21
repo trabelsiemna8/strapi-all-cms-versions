@@ -1,0 +1,60 @@
+Arguments: 
+  /usr/local/bin/node /usr/local/bin/yarnpkg install --production --no-optional --network-timeout 1000000
+
+PATH: 
+  /Users/emnatrabelsi/.npm/_npx/627209ad3a10eb5e/node_modules/.bin:/Users/emnatrabelsi/work/strapi-all-CMS-versions/strapi-all-cms-versions/workdir/node_modules/.bin:/Users/emnatrabelsi/work/strapi-all-CMS-versions/strapi-all-cms-versions/node_modules/.bin:/Users/emnatrabelsi/work/strapi-all-CMS-versions/node_modules/.bin:/Users/emnatrabelsi/work/node_modules/.bin:/Users/emnatrabelsi/node_modules/.bin:/Users/node_modules/.bin:/node_modules/.bin:/usr/local/lib/node_modules/npm/node_modules/@npmcli/run-script/lib/node-gyp-bin:/usr/local/go/bin:/Users/emnatrabelsi/bin:/usr/local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/usr/local/go/bin:/Applications/Postgres.app/Contents/Versions/latest/bin:/Users/emnatrabelsi/Library/pnpm:/Users/emnatrabelsi/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.11/bin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  20.6.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: ENOENT: no such file or directory, open '/Users/emnatrabelsi/Library/Caches/Yarn/v6/npm-@strapi-design-system-1.16.0-29508372c6a90993d87991411c323193dcc9f22a-integrity/node_modules/@strapi/design-system/.yarn-tarball.tgz'
+
+npm manifest: 
+  {
+    "name": "4-21-0",
+    "private": true,
+    "version": "0.1.0",
+    "description": "A Strapi application",
+    "scripts": {
+      "develop": "strapi develop",
+      "start": "strapi start",
+      "build": "strapi build",
+      "strapi": "strapi"
+    },
+    "devDependencies": {},
+    "dependencies": {
+      "@strapi/strapi": "4.21.0",
+      "@strapi/plugin-users-permissions": "4.21.0",
+      "@strapi/plugin-i18n": "4.21.0",
+      "@strapi/plugin-cloud": "4.21.0",
+      "better-sqlite3": "8.6.0",
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0",
+      "react-router-dom": "5.3.4",
+      "styled-components": "5.3.3"
+    },
+    "author": {
+      "name": "A Strapi developer"
+    },
+    "strapi": {
+      "uuid": "88e2daad-9b7a-4be7-8e1a-2312e5c8c7cf"
+    },
+    "engines": {
+      "node": ">=18.0.0 <=20.x.x",
+      "npm": ">=6.0.0"
+    },
+    "license": "MIT"
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
