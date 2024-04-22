@@ -2,7 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { exec, execSync } = require("node:child_process");
 
-const MIN_VERSION = "4.4.0";
+const MIN_VERSION = "4.21.1";
 const REPO_ROOT = path.join(__dirname, "..");
 const INSTALL_BATCH_SIZE = 12;
 const INSTALL_TIMEOUT = 15000; // ms - Exit install after timeout to skip dependency installation
