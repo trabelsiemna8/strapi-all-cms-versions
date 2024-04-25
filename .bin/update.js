@@ -13,11 +13,17 @@ const listStrapiVersions = ({ minVersion }) => {
   });
 
   git("checkout master");
-  const alreadyInstalled = git("branch")
+
+  const alreadyInstalled = git("branch --all")
     .trim()
     .split("\n")
     .map((v) => v.trim())
-    .filter((v) => v !== "* master");
+    .map(v => v.replace("remotes/origin/", ""))
+    .filter((v) => {
+      return !v.includes("master") && !v.includes("HEAD")
+    })
+    ;
+
 
   const versions = JSON.parse(rawVersions.replaceAll("'", '"'));
 
