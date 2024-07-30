@@ -4,7 +4,6 @@ const { exec, execSync } = require("node:child_process");
 
 const MIN_VERSION = "4.8.2";
 const REPO_ROOT = path.join(__dirname, "..");
-const INSTALL_BATCH_SIZE = 12;
 const INSTALL_TIMEOUT = 60000; // ms - Increased timeout to handle slower CI environment
 
 const configureGit = () => {
@@ -46,7 +45,7 @@ const listStrapiVersions = ({ minVersion }) => {
 };
 
 const installStrapiVersion = async (version, { workdir }) =>
-  new Promise((resolve) => {
+  new Promise((resolve, reject) => {
     console.log(`Installing ${version}`);
 
     const childProcess = exec(
@@ -71,7 +70,7 @@ const installStrapiVersion = async (version, { workdir }) =>
           console.error({ err, stdout, stderr });
 
           childProcess.kill("SIGINT");
-          resolve();
+          reject(new Error(`Installation failed for version ${version}`));
         }
       }
     );
@@ -85,26 +84,18 @@ const installStrapiVersions = async (versions) => {
 
   console.log(`Selected for install: ${versions.join(", ")}\n`);
 
-  const batch_count = Math.ceil(versions.length / INSTALL_BATCH_SIZE);
-  const batches = [];
+  const successfulInstalls = [];
 
-  for (let i = 0; i < batch_count; i++) {
-    if (i === batch_count - 1) {
-      batches.push(versions);
-    } else {
-      batches.push(versions.splice(0, INSTALL_BATCH_SIZE));
+  for (const version of versions) {
+    try {
+      await installStrapiVersion(version, { workdir });
+      successfulInstalls.push(version);
+    } catch (error) {
+      console.error(error.message);
     }
   }
 
-  console.log(`Installing ${batch_count} batches`);
-
-  for (const batch of batches) {
-    const installs = batch.map((version) =>
-      installStrapiVersion(version, { workdir })
-    );
-
-    await Promise.all(installs);
-  }
+  return successfulInstalls;
 };
 
 const git = (command) =>
@@ -146,6 +137,7 @@ const moveVersionsToBranches = (versions) => {
     copyDirectoryContent(strapiPath, REPO_ROOT);
     git("add -A");
     git(`commit -m "Init version ${version}"`);
+    git(`push origin ${version}`);
 
     fs.rmSync(path.join(strapiPath), {
       recursive: true,
@@ -159,8 +151,8 @@ const main = async () => {
 
   const versions = listStrapiVersions({ minVersion: MIN_VERSION });
 
-  await installStrapiVersions(versions);
-  moveVersionsToBranches(versions);
+  const successfulInstalls = await installStrapiVersions(versions);
+  moveVersionsToBranches(successfulInstalls);
 
   console.log("\nDone.");
   git("checkout master");
