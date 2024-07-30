@@ -5,7 +5,7 @@ const { exec, execSync } = require("node:child_process");
 const MIN_VERSION = "4.8.2";
 const REPO_ROOT = path.join(__dirname, "..");
 const INSTALL_BATCH_SIZE = 12;
-const INSTALL_TIMEOUT = 15000; // ms - Exit install after timeout to skip dependency installation
+const INSTALL_TIMEOUT = 120000; // ms - Exit install after timeout to skip dependency installation
 
 const listStrapiVersions = ({ minVersion }) => {
   const rawVersions = execSync("npm view create-strapi-app versions", {
