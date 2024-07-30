@@ -4,7 +4,7 @@ const { exec, execSync } = require("node:child_process");
 
 const MIN_VERSION = "4.8.2";
 const REPO_ROOT = path.join(__dirname, "..");
-const INSTALL_TIMEOUT = 60000; // ms - Increased timeout to handle slower CI environment
+const INSTALL_TIMEOUT = 90000; // ms - Increased timeout to handle slower CI environment
 
 const configureGit = () => {
   git('config --global user.email "emna.trabelsi@strapi.io"');
