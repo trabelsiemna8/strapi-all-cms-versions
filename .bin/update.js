@@ -66,6 +66,8 @@ const moveVersionToBranch = (version) => {
 
   console.log(`\n> Creating branch for ${version}`);
   git("checkout master");
+  git('config --global user.email "emna.trabelsi@strapi.io"');
+  git('config --global user.name "Emna Trabelsi"');
 
   // Delete branch if it already exists
   try {
