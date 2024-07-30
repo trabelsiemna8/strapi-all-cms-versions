@@ -1,0 +1,19 @@
+name: CI
+
+on:
+  schedule:
+    - cron: '0 20 * * 1'  # 8 PM every Monday
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run update script in debug mode
+        run: DEBUG=true node .bin/update.js
+
+      - name: Push all branches
+        run: bash .bin/push-all-branches.bash
