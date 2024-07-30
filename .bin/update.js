@@ -2,9 +2,48 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { exec, execSync } = require("node:child_process");
 
-const VERSION = "5.0.0-beta.9";
+const MIN_VERSION = "4.8.2";
 const REPO_ROOT = path.join(__dirname, "..");
+const INSTALL_BATCH_SIZE = 12;
 const INSTALL_TIMEOUT = 60000; // ms - Increased timeout to handle slower CI environment
+
+const configureGit = () => {
+  git('config --global user.email "emna.trabelsi@strapi.io"');
+  git('config --global user.name "Emna Trabelsi"');
+};
+
+const listStrapiVersions = ({ minVersion }) => {
+  const rawVersions = execSync("npm view create-strapi-app versions", {
+    encoding: "utf8",
+  });
+
+  git("checkout master");
+
+  // Force-fetch all branches
+  git("fetch --all");
+
+  const alreadyInstalled = git("branch --all")
+    .trim()
+    .split("\n")
+    .map((v) => v.trim().replace("remotes/origin/", ""))
+    .filter((v) => !v.includes("master") && !v.includes("HEAD"));
+
+  console.log(`\nDetected installed versions in branches: ${alreadyInstalled.join(", ")}\n`);
+
+  const versions = JSON.parse(rawVersions.replaceAll("'", '"'));
+
+  const firstVersionIndex = versions.findIndex((version) =>
+    version.startsWith(minVersion)
+  );
+
+  versions.splice(0, firstVersionIndex);
+
+  const selectedVersions = versions.filter(
+    (v) => !alreadyInstalled.includes(v)
+  );
+
+  return selectedVersions;
+};
 
 const installStrapiVersion = async (version, { workdir }) =>
   new Promise((resolve) => {
@@ -38,6 +77,36 @@ const installStrapiVersion = async (version, { workdir }) =>
     );
   });
 
+const installStrapiVersions = async (versions) => {
+  const workdir = path.join(REPO_ROOT, "workdir");
+
+  fs.rmSync(workdir, { recursive: true, force: true });
+  fs.mkdirSync(workdir);
+
+  console.log(`Selected for install: ${versions.join(", ")}\n`);
+
+  const batch_count = Math.ceil(versions.length / INSTALL_BATCH_SIZE);
+  const batches = [];
+
+  for (let i = 0; i < batch_count; i++) {
+    if (i === batch_count - 1) {
+      batches.push(versions);
+    } else {
+      batches.push(versions.splice(0, INSTALL_BATCH_SIZE));
+    }
+  }
+
+  console.log(`Installing ${batch_count} batches`);
+
+  for (const batch of batches) {
+    const installs = batch.map((version) =>
+      installStrapiVersion(version, { workdir })
+    );
+
+    await Promise.all(installs);
+  }
+};
+
 const git = (command) =>
   execSync(`git ${command}`, {
     cwd: REPO_ROOT,
@@ -57,44 +126,41 @@ const copyDirectoryContent = (src, dst) => {
   console.log(`Copied ${files.length} files to repository root`);
 };
 
-const moveVersionToBranch = (version) => {
-  console.log("\nMoving Strapi version files to a dedicated git branch");
+const moveVersionsToBranches = (versions) => {
+  console.log("\nMoving each Strapi version files to a dedicated git branch");
 
-  const strapiPath = path.join(REPO_ROOT, "workdir", version);
+  for (const version of versions) {
+    const strapiPath = path.join(REPO_ROOT, "workdir", version);
 
-  if (!fs.existsSync(strapiPath)) return;
+    if (!fs.existsSync(strapiPath)) continue;
 
-  console.log(`\n> Creating branch for ${version}`);
-  git("checkout master");
-  git('config --global user.email "emna.trabelsi@strapi.io"');
-  git('config --global user.name "Emna Trabelsi"');
+    console.log(`\n> Creating branch for ${version}`);
+    git("checkout master");
 
-  // Delete branch if it already exists
-  try {
-    git(`branch -D ${version}`);
-  } catch (error) {}
+    // Delete branch if it already exists
+    try {
+      git(`branch -D ${version}`);
+    } catch (error) {}
 
-  git(`checkout -b ${version}`);
-  copyDirectoryContent(strapiPath, REPO_ROOT);
-  git("add -A");
-  git(`commit -m "Init version ${version}"`);
+    git(`checkout -b ${version}`);
+    copyDirectoryContent(strapiPath, REPO_ROOT);
+    git("add -A");
+    git(`commit -m "Init version ${version}"`);
 
-  fs.rmSync(path.join(strapiPath), {
-    recursive: true,
-    force: true,
-  });
+    fs.rmSync(path.join(strapiPath), {
+      recursive: true,
+      force: true,
+    });
+  }
 };
 
 const main = async () => {
-  const workdir = path.join(REPO_ROOT, "workdir");
+  configureGit();
 
-  fs.rmSync(workdir, { recursive: true, force: true });
-  fs.mkdirSync(workdir);
+  const versions = listStrapiVersions({ minVersion: MIN_VERSION });
 
-  console.log(`Selected for install: ${VERSION}\n`);
-
-  await installStrapiVersion(VERSION, { workdir });
-  moveVersionToBranch(VERSION);
+  await installStrapiVersions(versions);
+  moveVersionsToBranches(versions);
 
   console.log("\nDone.");
   git("checkout master");
