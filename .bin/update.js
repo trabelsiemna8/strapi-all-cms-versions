@@ -3,8 +3,9 @@ const path = require("node:path");
 const { exec, execSync } = require("node:child_process");
 
 const MIN_VERSION = "4.8.2";
+const EXCLUDED_VERSIONS = ["4.13.0"];
 const REPO_ROOT = path.join(__dirname, "..");
-const INSTALL_TIMEOUT = 90000; // ms - Increased timeout to handle slower CI environment
+const INSTALL_TIMEOUT = 60000; // ms - Increased timeout to handle slower CI environment
 
 const configureGit = () => {
   git('config --global user.email "emna.trabelsi@strapi.io"');
@@ -38,7 +39,7 @@ const listStrapiVersions = ({ minVersion }) => {
   versions.splice(0, firstVersionIndex);
 
   const selectedVersions = versions.filter(
-    (v) => !alreadyInstalled.includes(v)
+    (v) => !alreadyInstalled.includes(v) && !EXCLUDED_VERSIONS.includes(v)
   );
 
   return selectedVersions;
