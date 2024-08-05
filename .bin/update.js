@@ -3,7 +3,8 @@ const path = require("node:path");
 const { exec, execSync } = require("node:child_process");
 
 const MIN_VERSION = "4.8.2";
-const EXCLUDED_VERSIONS = ["4.13.0", "5.0.0-beta.11", "5.0.0-beta.15", "5.0.0-rc.1", "5.0.0-rc.3", "5.0.0-rc.5"];
+// const EXCLUDED_VERSIONS = ["4.13.0", "5.0.0-beta.11", "5.0.0-beta.15", "5.0.0-rc.1", "5.0.0-rc.3", "5.0.0-rc.5"];
+const EXCLUDED_VERSIONS = ["4.13.0"];
 const REPO_ROOT = path.join(__dirname, "..");
 const INSTALL_TIMEOUT = 60000; // ms - Increased timeout to handle slower CI environment
 
