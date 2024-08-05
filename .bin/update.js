@@ -13,6 +13,39 @@ const configureGit = () => {
   git('config --global user.name "Emna Trabelsi"');
 };
 
+// const listStrapiVersions = ({ minVersion }) => {
+//   const rawVersions = execSync("npm view create-strapi-app versions", {
+//     encoding: "utf8",
+//   });
+
+//   git("checkout master");
+
+//   // Force-fetch all branches
+//   git("fetch --all");
+
+//   const alreadyInstalled = git("branch --all")
+//     .trim()
+//     .split("\n")
+//     .map((v) => v.trim().replace("remotes/origin/", ""))
+//     .filter((v) => !v.includes("master") && !v.includes("HEAD"));
+
+//   console.log(`\nDetected installed versions in branches: ${alreadyInstalled.join(", ")}\n`);
+
+//   const versions = JSON.parse(rawVersions.replaceAll("'", '"'));
+
+//   const firstVersionIndex = versions.findIndex((version) =>
+//     version.startsWith(minVersion)
+//   );
+
+//   versions.splice(0, firstVersionIndex);
+
+//   const selectedVersions = versions.filter(
+//     (v) => !alreadyInstalled.includes(v) && !EXCLUDED_VERSIONS.includes(v)
+//   );
+
+//   return selectedVersions;
+// };
+
 const listStrapiVersions = ({ minVersion }) => {
   const rawVersions = execSync("npm view create-strapi-app versions", {
     encoding: "utf8",
@@ -23,10 +56,13 @@ const listStrapiVersions = ({ minVersion }) => {
   // Force-fetch all branches
   git("fetch --all");
 
-  const alreadyInstalled = git("branch --all")
+  // List all local and remote branches
+  const allBranches = git("branch --all")
     .trim()
     .split("\n")
-    .map((v) => v.trim().replace("remotes/origin/", ""))
+    .map((v) => v.trim().replace("remotes/origin/", ""));
+
+  const alreadyInstalled = allBranches
     .filter((v) => !v.includes("master") && !v.includes("HEAD"));
 
   console.log(`\nDetected installed versions in branches: ${alreadyInstalled.join(", ")}\n`);
@@ -45,6 +81,7 @@ const listStrapiVersions = ({ minVersion }) => {
 
   return selectedVersions;
 };
+
 
 const installStrapiVersion = async (version, { workdir }) =>
   new Promise((resolve, reject) => {
@@ -119,6 +156,35 @@ const copyDirectoryContent = (src, dst) => {
   console.log(`Copied ${files.length} files to repository root`);
 };
 
+// const moveVersionsToBranches = (versions) => {
+//   console.log("\nMoving each Strapi version files to a dedicated git branch");
+
+//   for (const version of versions) {
+//     const strapiPath = path.join(REPO_ROOT, "workdir", version);
+
+//     if (!fs.existsSync(strapiPath)) continue;
+
+//     console.log(`\n> Creating branch for ${version}`);
+//     git("checkout master");
+
+//     // Delete branch if it already exists
+//     try {
+//       git(`branch -D ${version}`);
+//     } catch (error) {}
+
+//     git(`checkout -b ${version}`);
+//     copyDirectoryContent(strapiPath, REPO_ROOT);
+//     git("add -A");
+//     git(`commit -m "Init version ${version}"`);
+//     git(`push origin ${version}`);
+
+//     fs.rmSync(path.join(strapiPath), {
+//       recursive: true,
+//       force: true,
+//     });
+//   }
+// };
+
 const moveVersionsToBranches = (versions) => {
   console.log("\nMoving each Strapi version files to a dedicated git branch");
 
@@ -130,7 +196,7 @@ const moveVersionsToBranches = (versions) => {
     console.log(`\n> Creating branch for ${version}`);
     git("checkout master");
 
-    // Delete branch if it already exists
+    // Check if the branch already exists, delete it if it does
     try {
       git(`branch -D ${version}`);
     } catch (error) {}
@@ -139,7 +205,12 @@ const moveVersionsToBranches = (versions) => {
     copyDirectoryContent(strapiPath, REPO_ROOT);
     git("add -A");
     git(`commit -m "Init version ${version}"`);
-    git(`push origin ${version}`);
+
+    // Push only if branch does not exist on remote
+    const branchExistsOnRemote = git(`branch -r --contains ${version}`).includes(`origin/${version}`);
+    if (!branchExistsOnRemote) {
+      git(`push origin ${version}`);
+    }
 
     fs.rmSync(path.join(strapiPath), {
       recursive: true,
@@ -147,6 +218,7 @@ const moveVersionsToBranches = (versions) => {
     });
   }
 };
+
 
 const main = async () => {
   configureGit();
