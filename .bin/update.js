@@ -158,6 +158,8 @@ const main = async () => {
 
   console.log("\nDone.");
   git("checkout master");
+  //push all branches
+  git("push origin --all");
 };
 
 main();

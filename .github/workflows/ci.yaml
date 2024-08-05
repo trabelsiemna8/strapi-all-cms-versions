@@ -15,8 +15,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run update script in debug mode
+      - name: Run update script in debug mode and push all branches
         run: DEBUG=true node .bin/update.js
 
-      - name: Push all branches
-        run: bash .bin/push-all-branches.bash
+      # - name: Push all branches
+      #   run: bash .bin/push-all-branches.bash
