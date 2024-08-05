@@ -50,7 +50,7 @@ const installStrapiVersion = async (version, { workdir }) =>
     console.log(`Installing ${version}`);
 
     const childProcess = exec(
-      `yes | npx create-strapi-app@${version} ${version} --quickstart`,
+      `yes | npx create-strapi-app@${version} ${version} --quickstart --skip-cloud --no-run`,
       {
         cwd: workdir,
         encoding: "utf8",
